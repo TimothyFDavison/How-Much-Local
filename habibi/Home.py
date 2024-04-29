@@ -146,5 +146,5 @@ if __name__ == "__main__":
                     ''')
     st.session_state.show_table = st.checkbox("Show Conversion Table", value=st.session_state.show_table)
     if st.session_state.show_table:
-        st.image("table.png", width=400)
+        st.image("habibi/table.png", width=400)
 
