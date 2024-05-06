@@ -186,15 +186,16 @@ if __name__ == "__main__":
 
         differential = round(abs(answer - input_answer), 4)
         rounded_differential = round(differential, 2)
+        percent_differential = differential / answer
 
         end_time = time()
         total_time = round(end_time - start_time, 4)
         st.session_state.user_times.append(total_time)
         st.session_state.user_differentials.append(differential)
         st.success(f"{answer} mL")
-        if differential < 5:
+        if percent_differential < .05:
             st.success(f"Off by: {rounded_differential} mL")
-        elif differential < 10:
+        elif percent_differential < .10:
             st.warning(f"Off by {rounded_differential} mL")
         else:
             st.error(f"Off by {rounded_differential} mL")
