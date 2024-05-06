@@ -1,6 +1,7 @@
 import streamlit as st
 
 import altair as alt
+import logging
 import pandas as pd
 import random
 from time import time
@@ -38,6 +39,14 @@ if "user_differentials" not in st.session_state:
     st.session_state.user_differentials = []
 if "user_times" not in st.session_state:
     st.session_state.user_times = []
+if "_id" not in st.session_state:
+    st.session_state._id = hash(time())
+if "logger" not in st.session_state:
+    st.session_state.logger = logging.getLogger(__name__)
+    logging.basicConfig(filename='habibi.log', level=logging.INFO)
+    st.session_state.logger.info(f'{st.session_state._id}: Initializing Session')
+if "session_start" not in st.session_state:
+    st.session_state.session_start = time()
 
 
 def clear_fields():
@@ -166,7 +175,6 @@ if __name__ == "__main__":
         st.session_state.input_anesthetic
     )
 
-    start_time = time()
     input_answer = st.text_input(
         label="Answer (mL)",
         value="",
@@ -188,10 +196,13 @@ if __name__ == "__main__":
         rounded_differential = round(differential, 2)
         percent_differential = differential / answer
 
-        end_time = time()
-        total_time = round(end_time - start_time, 4)
+        # User tracking
+        total_time = round(time() - st.session_state.session_start, 4)
         st.session_state.user_times.append(total_time)
         st.session_state.user_differentials.append(differential)
+        st.session_state.logger.info(f'{st.session_state._id}: differential={differential} time={total_time}')
+
+        # Results display
         st.success(f"{answer} mL")
         if percent_differential < .05:
             st.success(f"Off by: {rounded_differential} mL")
@@ -221,4 +232,5 @@ if __name__ == "__main__":
         except:
             st.warning("You must select at least one anesthetic in Settings.")
             st.stop()
+        st.session_state.session_start = time()
         st.rerun()
