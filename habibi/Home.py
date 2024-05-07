@@ -223,7 +223,14 @@ if __name__ == "__main__":
 
     show_table = st.checkbox("Show Conversion Table", value=st.session_state.show_table)
     if show_table:
-        st.image("habibi/table.png", width=400)
+        safe_dose = {
+            "Plain Lidocaine": 4,
+            "Lidocaine with Epinephrine": 7,
+            "Plain Bupivacaine": 2,
+            "Bupivacaine with Epinephrine": 3,
+        }
+        df = pd.DataFrame({"Anesthetic": safe_dose.keys(), "Safe Dosage (mg/kg)": safe_dose.values()})
+        st.markdown(df.style.hide(axis="index").to_html(), unsafe_allow_html=True)
 
     if next:
         input_answer = None
