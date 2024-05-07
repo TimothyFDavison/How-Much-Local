@@ -4,6 +4,7 @@ import altair as alt
 import logging
 import pandas as pd
 import random
+import sys
 from time import time
 
 
@@ -42,8 +43,8 @@ if "user_times" not in st.session_state:
 if "_id" not in st.session_state:
     st.session_state._id = hash(time())
 if "logger" not in st.session_state:
-    st.session_state.logger = logging.getLogger(__name__)
-    logging.basicConfig(filename='habibi.log', level=logging.INFO)
+    st.session_state.logger = logging.getLogger()
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)  # filename='habibi.log'
     st.session_state.logger.info(f'{st.session_state._id}: Initializing Session')
 if "session_start" not in st.session_state:
     st.session_state.session_start = time()
@@ -132,7 +133,6 @@ if __name__ == "__main__":
             y=alt.Y('Time (s)', axis=alt.Axis(tickCount=5, labelOverlap="greedy", grid=False))
         )
         st.sidebar.altair_chart(times_chart, use_container_width=True)
-        print(st.session_state.user_differentials)
         user_differentials = pd.DataFrame(
             {
                 "Differential (mL)": st.session_state.user_differentials,
