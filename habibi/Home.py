@@ -44,8 +44,8 @@ if "_id" not in st.session_state:
     st.session_state._id = hash(time())
 if "logger" not in st.session_state:
     st.session_state.logger = logging.getLogger()
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)  # filename='habibi.log'
-    st.session_state.logger.info(f'{time()} {st.session_state._id}: Initializing Session')
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)  # filename='habibi.log'
+    st.session_state.logger.info(f'{{"time": "{time()}", "session_id": "{st.session_state._id}"}}')
 if "session_start" not in st.session_state:
     st.session_state.session_start = time()
 
@@ -200,7 +200,8 @@ if __name__ == "__main__":
         total_time = round(time() - st.session_state.session_start, 4)
         st.session_state.user_times.append(total_time)
         st.session_state.user_differentials.append(differential)
-        st.session_state.logger.info(f'{time()} {st.session_state._id}: differential={differential} time={total_time}')
+        st.session_state.logger.info(f'{{"time": "{time()}", "session_id": "{st.session_state._id}",'
+                                     f' "differential": "{differential}", "time"="{total_time}"}}')
 
         # Results display
         st.success(f"{answer} mL")
