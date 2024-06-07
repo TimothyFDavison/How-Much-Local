@@ -15,7 +15,7 @@ anesthetics_list = list(config.SAFE_DOSAGES.keys())
 if "anesthetics_options" not in st.session_state:
     st.session_state.anesthetics_options = list(config.SAFE_DOSAGES.keys())
 if "input_weight" not in st.session_state:
-    st.session_state.input_weight = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
+    st.session_state.input_weight = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
 if "input_anesthetic" not in st.session_state:
     st.session_state.input_anesthetic = random.choice(st.session_state.anesthetics_options)
 
@@ -148,7 +148,8 @@ if __name__ == "__main__":
     st.sidebar.markdown("Gitman M, Fettiplace MR, Weinberg GL, Neal JM, Barrington MJ. Local Anesthetic Systemic Toxicity: A Narrative Literature Review and Clinical Update on Prevention, Diagnosis, and Management. Plast Reconstr Surg. 2019 Sep;144(3):783-795. doi: 10.1097/PRS.0000000000005989. PMID: 31461049.")
 
     # Main display
-    st.markdown("### How much local can you inject?")
+    st.markdown("### Pediatrics - How much local can you inject?")
+    st.text(f"| Weight range from {config.PEDS_WEIGHT_MINIMUM} to {config.PEDS_WEIGHT_MAXIMUM} kg.|")
     st.text(f"Weight (kg): {st.session_state.input_weight}")
     st.text(f"Anesthetic: {st.session_state.input_anesthetic}")
     answer, dosage_amount, percent = calculate_safe_dose(
@@ -230,7 +231,7 @@ if __name__ == "__main__":
 
     if next:
         input_answer = None
-        st.session_state["input_weight"] = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
+        st.session_state["input_weight"] = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
         try:
             st.session_state.input_anesthetic = random.choice(st.session_state.anesthetics_options)
         except:
