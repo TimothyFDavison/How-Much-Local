@@ -18,6 +18,8 @@ if "input_weight" not in st.session_state:
     st.session_state.input_weight = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
 if "input_anesthetic" not in st.session_state:
     st.session_state.input_anesthetic = random.choice(st.session_state.anesthetics_options)
+if st.session_state.input_weight > config.PEDS_WEIGHT_MAXIMUM:
+    st.session_state.input_weight = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
 
 # Display variables
 if "text" not in st.session_state:
@@ -51,7 +53,7 @@ def get_data():
     """
     Will persist per session.
     """
-    st.session_state["input_weight"] = random.randint(10, 80)
+    st.session_state["input_weight"] = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
     st.session_state["input_anesthetic"] = random.choice(st.session_state.anesthetics_options)
     return
 
