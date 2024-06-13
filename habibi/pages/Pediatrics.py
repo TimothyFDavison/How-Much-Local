@@ -151,7 +151,6 @@ if __name__ == "__main__":
 
     # Main display
     st.markdown("### Pediatrics - How much local can you inject?")
-    st.text(f"| Weight range from {config.PEDS_WEIGHT_MINIMUM} to {config.PEDS_WEIGHT_MAXIMUM} kg.|")
     st.text(f"Weight (kg): {st.session_state.input_weight}")
     st.text(f"Anesthetic: {st.session_state.input_anesthetic}")
     answer, dosage_amount, percent = calculate_safe_dose(
