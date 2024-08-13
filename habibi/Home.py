@@ -145,7 +145,7 @@ if __name__ == "__main__":
     st.sidebar.markdown("## **Toxicity Signs and Treatment**")
     st.sidebar.markdown("Gitman M, Fettiplace MR, Weinberg GL, Neal JM, Barrington MJ. Local Anesthetic Systemic Toxicity: A Narrative Literature Review and Clinical Update on Prevention, Diagnosis, and Management. Plast Reconstr Surg. 2019 Sep;144(3):783-795. doi: 10.1097/PRS.0000000000005989. PMID: 31461049.")
     st.sidebar.markdown("## **Education Theory**")
-    st.sidebar.markdown("Gitman M, Fettiplace MR, Weinberg GL, Neal JM, Barrington MJ. Local Anesthetic Systemic Toxicity: A Narrative Literature Review and Clinical Update on Prevention, Diagnosis, and Management. Plast Reconstr Surg. 2019 Sep;144(3):783-795. doi: 10.1097/PRS.0000000000005989. PMID: 31461049.")
+    st.sidebar.markdown("Roediger HL 3rd, Butler AC. The critical role of retrieval practice in long-term retention. Trends Cogn Sci. 2011 Jan;15(1):20-7. doi: 10.1016/j.tics.2010.09.003. Epub 2010 Oct 15. PMID: 20951630")
 
     # Main display
     st.markdown("### How much local can you inject?")
