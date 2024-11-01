@@ -1,16 +1,8 @@
 import streamlit as st
-
-import altair as alt
-import logging
 import pandas as pd
-import random
-import sys
-from time import time
 
 import config
 
-
-# Control variables
 
 # Display variables
 if "text" not in st.session_state:

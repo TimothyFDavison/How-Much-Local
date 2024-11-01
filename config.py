@@ -1,4 +1,4 @@
-import os
+""" Configuration file. """
 
 # Safe dosage list
 SAFE_DOSAGES = {

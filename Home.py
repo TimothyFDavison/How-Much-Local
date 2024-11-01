@@ -1,11 +1,11 @@
-import streamlit as st
-
-import altair as alt
 import logging
-import pandas as pd
 import random
 import sys
 from time import time
+
+import altair as alt
+import pandas as pd
+import streamlit as st
 
 import config
 
@@ -15,11 +15,9 @@ anesthetics_list = list(config.SAFE_DOSAGES.keys())
 if "anesthetics_options" not in st.session_state:
     st.session_state.anesthetics_options = list(config.SAFE_DOSAGES.keys())
 if "input_weight" not in st.session_state:
-    st.session_state.input_weight = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
+    st.session_state.input_weight = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
 if "input_anesthetic" not in st.session_state:
     st.session_state.input_anesthetic = random.choice(st.session_state.anesthetics_options)
-if st.session_state.input_weight > config.PEDS_WEIGHT_MAXIMUM:
-    st.session_state.input_weight = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
 
 # Display variables
 if "text" not in st.session_state:
@@ -53,7 +51,7 @@ def get_data():
     """
     Will persist per session.
     """
-    st.session_state["input_weight"] = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
+    st.session_state["input_weight"] = random.randint(10, 80)
     st.session_state["input_anesthetic"] = random.choice(st.session_state.anesthetics_options)
     return
 
@@ -147,10 +145,10 @@ if __name__ == "__main__":
     st.sidebar.markdown("## **Toxicity Signs and Treatment**")
     st.sidebar.markdown("Gitman M, Fettiplace MR, Weinberg GL, Neal JM, Barrington MJ. Local Anesthetic Systemic Toxicity: A Narrative Literature Review and Clinical Update on Prevention, Diagnosis, and Management. Plast Reconstr Surg. 2019 Sep;144(3):783-795. doi: 10.1097/PRS.0000000000005989. PMID: 31461049.")
     st.sidebar.markdown("## **Education Theory**")
-    st.sidebar.markdown("Gitman M, Fettiplace MR, Weinberg GL, Neal JM, Barrington MJ. Local Anesthetic Systemic Toxicity: A Narrative Literature Review and Clinical Update on Prevention, Diagnosis, and Management. Plast Reconstr Surg. 2019 Sep;144(3):783-795. doi: 10.1097/PRS.0000000000005989. PMID: 31461049.")
+    st.sidebar.markdown("Roediger HL 3rd, Butler AC. The critical role of retrieval practice in long-term retention. Trends Cogn Sci. 2011 Jan;15(1):20-7. doi: 10.1016/j.tics.2010.09.003. Epub 2010 Oct 15. PMID: 20951630")
 
     # Main display
-    st.markdown("### Pediatrics - How much local can you inject?")
+    st.markdown("### How much local can you inject?")
     st.text(f"Weight (kg): {st.session_state.input_weight}")
     st.text(f"Anesthetic: {st.session_state.input_anesthetic}")
     answer, dosage_amount, percent = calculate_safe_dose(
@@ -168,7 +166,7 @@ if __name__ == "__main__":
     next = col2.button("Next", on_click=clear_fields)
 
     # Control logic
-    if input_answer or check:
+    if check:
         try:
             input_answer = float(input_answer)
         except:
@@ -232,7 +230,7 @@ if __name__ == "__main__":
 
     if next:
         input_answer = None
-        st.session_state["input_weight"] = random.randint(config.PEDS_WEIGHT_MINIMUM, config.PEDS_WEIGHT_MAXIMUM)
+        st.session_state["input_weight"] = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
         try:
             st.session_state.input_anesthetic = random.choice(st.session_state.anesthetics_options)
         except:
