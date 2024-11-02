@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     # Sidebar - Resources
     st.sidebar.markdown("# References")
-    show_references = st.checkbox("Show References")
+    show_references = st.sidebar.checkbox("Show References")
     if show_references:
         st.sidebar.markdown("## **Local Anesthetic Characteristics**")
         st.sidebar.markdown("Becker DE, Reed KL. Local anesthetics: review of pharmacological considerations. Anesth Prog. 2012 Summer;59(2):90-101; quiz 102-3. doi: 10.2344/0003-3006-59.2.90. PMID: 22822998; PMCID: PMC3403589.")
