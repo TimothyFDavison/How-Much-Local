@@ -61,8 +61,11 @@ def calculate_safe_dose(weight, input):
     Calculate the dosage. To-do, move the list to a config file.
     """
     percent = float(input.split("%")[0])
-    answer = weight * config.SAFE_DOSAGES[input] * (.1 / percent)  # 1mL/%*10mg
+    answer = weight * config.SAFE_DOSAGES[input] * (.1 / percent)
     answer = round(answer, 4)
+    if "Epinehrine" in input and weight <= config.WEIGHT_THRESHOLD:
+        epinephrine_answer = weight * config.SAFE_DOSAGES[input] * .1
+        return min(answer, epinephrine_answer), config.SAFE_DOSAGES[input], percent
     return answer, config.SAFE_DOSAGES[input], percent
 
 
@@ -175,6 +178,7 @@ if __name__ == "__main__":
             st.warning("Please input a number in decimal form.")
             st.stop()
 
+        # Compute differential
         differential = round(abs(answer - input_answer), 4)
         rounded_differential = round(differential, 2)
         percent_differential = differential / answer
@@ -189,20 +193,39 @@ if __name__ == "__main__":
         # Results display
         st.success(f"{answer} mL")
         if percent_differential < config.GREEN_THRESHOLD:
-            st.success(f"Off by: {rounded_differential} mL")
+            if st.session_state.input_weight <= config.WEIGHT_THRESHOLD and "Epinephrine" in st.session_state.input_anesthetic:
+                st.success(f"Off by: {rounded_differential} mL, using Epinephrine as limiting factor.")
+            else:
+                st.success(f"Off by: {rounded_differential} mL")
         elif percent_differential < config.YELLOW_THRESHOLD:
-            st.warning(f"Off by {rounded_differential} mL")
+            if st.session_state.input_weight <= config.WEIGHT_THRESHOLD and "Epinephrine" in st.session_state.input_anesthetic:
+                st.warning(f"Off by: {rounded_differential} mL, using Epinephrine as limiting factor.")
+            else:
+                st.warning(f"Off by: {rounded_differential} mL")
         else:
-            st.error(f"Off by {rounded_differential} mL")
+            if st.session_state.input_weight <= config.WEIGHT_THRESHOLD and "Epinephrine" in st.session_state.input_anesthetic:
+                st.error(f"Off by: {rounded_differential} mL, using Epinephrine as limiting factor.")
+            else:
+                st.error(f"Off by: {rounded_differential} mL")
 
     # Display variables
     show_formula = st.checkbox("Show Formula")
     if show_formula:
         st.latex(rf'''
-                    {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
-                    (\frac{{1 ml}}{{{percent} \times 10 mg}})
+            {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
+            (\frac{{1 ml}}{{{percent} \times 10 mg}})
 
         ''')
+        if "Epinephrine" in st.session_state.input_anesthetic:
+            st.markdown(
+                "<div style='text-align: center; color: grey;'>Epinephrine limit:</div>",
+                unsafe_allow_html=True
+            )
+            st.latex(rf'''
+                {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{ug}}{{kg}}) \times 
+                (\frac{{1 ml}}{{10 ug}})
+
+            ''')
 
     show_table = st.checkbox("Show Conversion Table", value=st.session_state.show_table)
     if show_table:

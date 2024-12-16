@@ -4,20 +4,23 @@
 SAFE_DOSAGES = {
         "0.25% Plain Lidocaine": 4,
         "0.25% Plain Bupivacaine": 2,
-        "0.25% Lidocaine with Epinephrine": 7,
+        "0.25% Lidocaine with 1:200000 Epinephrine": 7,
         "0.5% Plain Bupivacaine": 2,
-        "0.5% Bupivacaine with Epinephrine": 3,
+        "0.5% Bupivacaine with 1:200000 Epinephrine": 3,
         "1% Plain Lidocaine": 4,
-        "1% Lidocaine with Epinephrine": 7,
+        "1% Lidocaine with 1:200000 Epinephrine": 7,
         "2% Plain Lidocaine": 4,
-        "2% Lidocaine with Epinephrine": 7,
+        "2% Lidocaine with 1:200000 Epinephrine": 7,
 }
 SAFE_DOSAGES_TABLE = {
             "Plain Lidocaine": 4,
-            "Lidocaine with Epinephrine": 7,
+            "Lidocaine with 1:200000 Epinephrine": 7,
             "Plain Bupivacaine": 2,
-            "Bupivacaine with Epinephrine": 3,
+            "Bupivacaine with 1:200000 Epinephrine": 3,
 }
+
+# Threshold for determining limiting factor between anesthetic, apinephrine content
+WEIGHT_THRESHOLD = 50
 
 # Threshold for green/yellow/red differentials. Anything beyond yellow is red.
 GREEN_THRESHOLD = .05
