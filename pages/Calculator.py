@@ -17,21 +17,24 @@ def clear_fields():
     st.session_state["text"] = ""
 
 
-def calculate_safe_dose(weight, input):
+def calculate_safe_dose(weight, age, input):
     """
     Calculate the dosage. To-do, move the list to a config file.
     """
     percent = float(input.split("%")[0])
-    answer = weight * config.SAFE_DOSAGES[input] * (.1 / percent)  # 1mL/%*10mg
+    answer = weight * config.SAFE_DOSAGES[input] * (.1 / percent)
     answer = round(answer, 4)
+    if "Epinephrine" in input and age < 18:
+        pediatric_answer = answer * (5./7.)  # adult -> child lido/epi dose ratio
+        return pediatric_answer, config.SAFE_DOSAGES[input], percent
     return answer, config.SAFE_DOSAGES[input], percent
 
 
 if __name__ == "__main__":
 
-
     # Main display
     st.markdown("### Calculator - How much local can you inject?")
+    age = st.number_input("Age", value=40, step=1)
     weight = st.text_input(f"Weight (kg)")
     anesthetic = st.selectbox(
         label="Anesthetic",
@@ -40,7 +43,7 @@ if __name__ == "__main__":
     submit = st.button("Submit")
 
     # Control logic
-    if (weight and anesthetic) or submit:
+    if (weight and age and anesthetic) or submit:
         try:
             weight = float(weight)
         except Exception as e:
@@ -48,6 +51,7 @@ if __name__ == "__main__":
 
         answer, dosage_amount, percent = calculate_safe_dose(
             weight,
+            age,
             anesthetic
         )
         st.success(f"{answer} mL")
@@ -59,13 +63,21 @@ if __name__ == "__main__":
             weight = float(weight)
             answer, dosage_amount, percent = calculate_safe_dose(
                 weight,
+                age,
                 anesthetic
             )
-            st.latex(rf'''
-                        {weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
-                        (\frac{{1 ml}}{{{percent} \times 10 mg}})
+            if "Epinephrine" in st.session_state.input_anesthetic and age < 18:
+                st.latex(rf'''
+                    {st.session_state.input_weight} kg \times  ({5} \frac{{mg}}{{kg}}) \times 
+                    (\frac{{1 ml}}{{{percent} \times 10 mg}})
 
-            ''')
+                ''')
+            else:
+                st.latex(rf'''
+                    {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
+                    (\frac{{1 ml}}{{{percent} \times 10 mg}})
+
+                ''')
         except Exception as e:
             st.warning("Could not parse weight input. Please provide a number.")
 
@@ -78,6 +90,10 @@ if __name__ == "__main__":
             }
         )
         st.markdown(df.style.hide(axis="index").to_html(), unsafe_allow_html=True)
+        st.markdown(
+            "<div style='text-align: left; color: grey;'>*SLCH maximum epinephrine dosing is 5 mg/kg.</div>",
+            unsafe_allow_html=True
+        )
 
     show_calculator = st.checkbox("Show Calculator")
     if show_calculator:

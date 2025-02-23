@@ -14,6 +14,8 @@ import config
 anesthetics_list = list(config.SAFE_DOSAGES.keys())
 if "anesthetics_options" not in st.session_state:
     st.session_state.anesthetics_options = list(config.SAFE_DOSAGES.keys())
+if "input_age" not in st.session_state:
+    st.session_state.input_age = random.randint(config.AGE_MINIMUM, config.AGE_MAXIMUM)
 if "input_weight" not in st.session_state:
     st.session_state.input_weight = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
 if "input_anesthetic" not in st.session_state:
@@ -51,7 +53,8 @@ def get_data():
     """
     Will persist per session.
     """
-    st.session_state["input_weight"] = random.randint(10, 80)
+    st.session_state["input_age"] = random.randint(config.AGE_MINIMUM, config.AGE_MAXIMUM)
+    st.session_state["input_weight"] = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
     st.session_state["input_anesthetic"] = random.choice(st.session_state.anesthetics_options)
     return
 
@@ -63,9 +66,9 @@ def calculate_safe_dose(weight, input):
     percent = float(input.split("%")[0])
     answer = weight * config.SAFE_DOSAGES[input] * (.1 / percent)
     answer = round(answer, 4)
-    if "Epinehrine" in input and weight <= config.WEIGHT_THRESHOLD:
-        epinephrine_answer = weight * config.SAFE_DOSAGES[input] * .1
-        return min(answer, epinephrine_answer), config.SAFE_DOSAGES[input], percent
+    if "Epinephrine" in input and st.session_state.input_age < 18:
+        pediatric_answer = answer * (5. / 7.)  # adult -> child lido/epi dose ratio
+        return pediatric_answer, config.SAFE_DOSAGES[input], percent
     return answer, config.SAFE_DOSAGES[input], percent
 
 
@@ -153,7 +156,8 @@ if __name__ == "__main__":
         st.sidebar.markdown("Roediger HL 3rd, Butler AC. The critical role of retrieval practice in long-term retention. Trends Cogn Sci. 2011 Jan;15(1):20-7. doi: 10.1016/j.tics.2010.09.003. Epub 2010 Oct 15. PMID: 20951630")
 
     # Main display
-    st.markdown("### How much local can you inject?")
+    st.markdown("### How much local can you infiltrate?")
+    st.text(f"Age: {st.session_state.input_age}")
     st.text(f"Weight (kg): {st.session_state.input_weight}")
     st.text(f"Anesthetic: {st.session_state.input_anesthetic}")
     answer, dosage_amount, percent = calculate_safe_dose(
@@ -193,37 +197,25 @@ if __name__ == "__main__":
         # Results display
         st.success(f"{answer} mL")
         if percent_differential < config.GREEN_THRESHOLD:
-            if st.session_state.input_weight <= config.WEIGHT_THRESHOLD and "Epinephrine" in st.session_state.input_anesthetic:
-                st.success(f"Off by: {rounded_differential} mL, using Epinephrine as limiting factor.")
-            else:
-                st.success(f"Off by: {rounded_differential} mL")
+            st.success(f"Off by: {rounded_differential} mL")
         elif percent_differential < config.YELLOW_THRESHOLD:
-            if st.session_state.input_weight <= config.WEIGHT_THRESHOLD and "Epinephrine" in st.session_state.input_anesthetic:
-                st.warning(f"Off by: {rounded_differential} mL, using Epinephrine as limiting factor.")
-            else:
-                st.warning(f"Off by: {rounded_differential} mL")
+            st.warning(f"Off by: {rounded_differential} mL")
         else:
-            if st.session_state.input_weight <= config.WEIGHT_THRESHOLD and "Epinephrine" in st.session_state.input_anesthetic:
-                st.error(f"Off by: {rounded_differential} mL, using Epinephrine as limiting factor.")
-            else:
-                st.error(f"Off by: {rounded_differential} mL")
+            st.error(f"Off by: {rounded_differential} mL")
 
     # Display variables
     show_formula = st.checkbox("Show Formula")
     if show_formula:
-        st.latex(rf'''
-            {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
-            (\frac{{1 ml}}{{{percent} \times 10 mg}})
-
-        ''')
-        if "Epinephrine" in st.session_state.input_anesthetic:
-            st.markdown(
-                "<div style='text-align: center; color: grey;'>Epinephrine limit:</div>",
-                unsafe_allow_html=True
-            )
+        if "Epinephrine" in st.session_state.input_anesthetic and st.session_state.input_age < 18:
             st.latex(rf'''
-                {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{ug}}{{kg}}) \times 
-                (\frac{{1 ml}}{{10 ug}})
+                {st.session_state.input_weight} kg \times  ({5} \frac{{mg}}{{kg}}) \times 
+                (\frac{{1 ml}}{{{percent} \times 10 mg}})
+    
+            ''')
+        else:
+            st.latex(rf'''
+                {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
+                (\frac{{1 ml}}{{{percent} \times 10 mg}})
 
             ''')
 
@@ -236,6 +228,10 @@ if __name__ == "__main__":
             }
         )
         st.markdown(df.style.hide(axis="index").to_html(), unsafe_allow_html=True)
+        st.markdown(
+            "<div style='text-align: left; color: grey;'>*SLCH maximum epinephrine dosing is 5 mg/kg.</div>",
+            unsafe_allow_html=True
+        )
 
     show_calculator = st.checkbox("Show Calculator")
     if show_calculator:
@@ -256,6 +252,7 @@ if __name__ == "__main__":
     if next:
         input_answer = None
         st.session_state["input_weight"] = random.randint(config.WEIGHT_MINIMUM, config.WEIGHT_MAXIMUM)
+        st.session_state["input_age"] = random.randint(config.AGE_MINIMUM, config.AGE_MAXIMUM)
         try:
             st.session_state.input_anesthetic = random.choice(st.session_state.anesthetics_options)
         except:
