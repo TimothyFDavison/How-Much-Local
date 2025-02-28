@@ -67,7 +67,7 @@ def calculate_safe_dose(weight, input):
     answer = weight * config.SAFE_DOSAGES[input] * (.1 / percent)
     answer = round(answer, 4)
     if "Epinephrine" in input and st.session_state.input_age < 18:
-        pediatric_answer = answer * (5. / 7.)  # adult -> child lido/epi dose ratio
+        pediatric_answer = weight  # adult -> child lido/epi dose ratio
         return pediatric_answer, config.SAFE_DOSAGES[input], percent
     return answer, config.SAFE_DOSAGES[input], percent
 
@@ -206,16 +206,19 @@ if __name__ == "__main__":
     # Display variables
     show_formula = st.checkbox("Show Formula")
     if show_formula:
+        st.latex(rf'''
+            {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
+            (\frac{{1 ml}}{{{percent} \times 10 mg}})
+
+        ''')
         if "Epinephrine" in st.session_state.input_anesthetic and st.session_state.input_age < 18:
+            st.markdown(
+                "<div style='text-align: left; color: grey;'>Epinephrine for pediatrics:</div>",
+                unsafe_allow_html=True
+            )
             st.latex(rf'''
-                {st.session_state.input_weight} kg \times  ({5} \frac{{mg}}{{kg}}) \times 
-                (\frac{{1 ml}}{{{percent} \times 10 mg}})
-    
-            ''')
-        else:
-            st.latex(rf'''
-                {st.session_state.input_weight} kg \times  ({dosage_amount} \frac{{mg}}{{kg}}) \times 
-                (\frac{{1 ml}}{{{percent} \times 10 mg}})
+                {st.session_state.input_weight} kg \times  ({5} \frac{{mcg}}{{kg}}) \times 
+                (\frac{{1 ml}}{{5 mcg}})
 
             ''')
 
@@ -229,7 +232,8 @@ if __name__ == "__main__":
         )
         st.markdown(df.style.hide(axis="index").to_html(), unsafe_allow_html=True)
         st.markdown(
-            "<div style='text-align: left; color: grey;'>*SLCH maximum epinephrine dosing is 5 mg/kg.</div>",
+            "<div style='text-align: left; color: grey;'>*SLCH uses an epinephrine max dose of 5 mcg/kg. "
+            "In 1:200000 epinephrine, the concentration is 5 mcg/kg.</div>",
             unsafe_allow_html=True
         )
 

@@ -15,8 +15,7 @@ SAFE_DOSAGES = {
 }
 SAFE_DOSAGES_TABLE = {
             "Plain Lidocaine": 4,
-            "Lidocaine with 1:200000 Epinephrine (Adult)": 7,
-            "Lidocaine with 1:200000 Epinephrine (Child)*": 5,
+            "Lidocaine with 1:200000 Epinephrine": 7,
             "Plain Bupivacaine": 2,
             "Bupivacaine with 1:200000 Epinephrine": 3,
 }
